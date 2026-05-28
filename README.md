@@ -4,7 +4,7 @@ Built this as part of an internship assignment — a lightweight offline voice c
 
 ## How it works
 
-Text goes through normalization first (strip filler words, lowercase, fix contractions), then gets converted to a 384-dim embedding using paraphrase-MiniLM-L3-v2, then classified by an SVM. If the confidence is too low or two classes are too close, it returns "unknown" instead of guessing wrong.
+Text goes through normalization first (strip filler words, lowercase, fix contractions), then gets converted to a 384-dim embedding using paraphrase-MiniLM-L3-v2, then classified by an SVM. If the confidence is too low or two classes are too close, it returns `"unknown"` instead of guessing wrong.
 
 More details in `architecture.md`.
 
@@ -28,61 +28,72 @@ python code/extension_analysis.py
 ```
 
 Single command prediction:
+
 ```bash
 python code/run.py "pause the music"
 ```
 
 ## Commands
 
-10 core + 4 extension commands, 15 classes total including "unknown" for out-of-scope inputs.
+10 core + 4 extension commands, 15 classes total including `"unknown"` for out-of-scope inputs.
 
-| # | Label | Example phrase |
-|---|---|---|
-| 1 | decrease_volume | "turn it down" |
-| 2 | increase_volume | "make it louder" |
-| 3 | play_music | "start playing" |
-| 4 | pause_music | "pause the song" |
-| 5 | pick_up_call | "answer the phone" |
-| 6 | decline_call | "reject the call" |
-| 7 | play_next_song | "skip to next" |
-| 8 | play_previous_song | "go back" |
-| 9 | activate_dnd | "do not disturb me" |
-| 10 | deactivate_dnd | "turn off dnd" |
-| 11 | increase_brightness *(ext)* | "make it brighter" |
-| 12 | decrease_brightness *(ext)* | "dim the screen" |
-| 13 | start_vehicle *(ext)* | "start the engine" |
-| 14 | stop_vehicle *(ext)* | "stop the car" |
+| #  | Label                       | Example phrase      |
+| -- | --------------------------- | ------------------- |
+| 1  | decrease_volume             | "turn it down"      |
+| 2  | increase_volume             | "make it louder"    |
+| 3  | play_music                  | "start playing"     |
+| 4  | pause_music                 | "pause the song"    |
+| 5  | pick_up_call                | "answer the phone"  |
+| 6  | decline_call                | "reject the call"   |
+| 7  | play_next_song              | "skip to next"      |
+| 8  | play_previous_song          | "go back"           |
+| 9  | activate_dnd                | "do not disturb me" |
+| 10 | deactivate_dnd              | "turn off dnd"      |
+| 11 | increase_brightness *(ext)* | "make it brighter"  |
+| 12 | decrease_brightness *(ext)* | "dim the screen"    |
+| 13 | start_vehicle *(ext)*       | "start the engine"  |
+| 14 | stop_vehicle *(ext)*        | "stop the car"      |
 
 ## Results
 
-| Metric | Value |
-|---|---|
-| Test Accuracy | 86.49% |
-| Clean Eval Accuracy | 100% |
-| Noise Test Accuracy | ~67% |
-| OOS Rejection Rate | 100% |
-| False Rejection Rate | 0% |
+| Metric               | Value  |
+| -------------------- | ------ |
+| Test Accuracy        | 85.71% |
+| Noise Test Accuracy  | 76.62% |
+| OOS Rejection Rate   | 100%   |
+| False Rejection Rate | 11.4%  |
+| Confidence Threshold | 0.30   |
+| Margin Threshold     | 0.05   |
 
 ## Benchmark
 
-| Model | Size | Avg Latency |
-|---|---|---|
-| classifier.pkl | 0.87 MB | — |
-| classifier.onnx (FP32) | 0.54 MB | 0.38 ms |
-| classifier_int8.onnx (INT8) | 0.54 MB | 0.33 ms |
+| Model                       | Size     | Avg Latency |
+| --------------------------- | -------- | ----------- |
+| classifier.pkl              | 0.87 MB  | —           |
+| classifier.onnx (FP32)      | 0.543 MB | 0.527 ms    |
+| classifier_int8.onnx (INT8) | 0.544 MB | 0.526 ms    |
 
-INT8 size is basically the same as FP32 — this is because quantization works on neural network weights and SVM doesn't have those. Documented in self_assessment.md.
+INT8 size is basically the same as FP32 — this is because quantization works on neural network weights and SVM doesn't have those. Documented in `self_assessment.md`.
+
+## Confusion Matrix Observations
+
+* Strong diagonal dominance shows clear class separation
+* Minimal confusion between semantically opposite commands
+* `unknown` class achieves perfect rejection for OOS inputs
+* Most mistakes happen when commands are short or semantically ambiguous
+* Brightness and volume commands occasionally overlap due to similar phrasing patterns
 
 ## Limitations
 
-- Noise robustness is weak when too many words get dropped or corrupted
-- Embedding model is not fine-tuned on this domain
-- Benchmarked on Colab CPU, not actual mobile hardware
-- "volume badao" maps to decrease_volume instead of increase_volume — Hinglish support is partial
+* Noise robustness drops under aggressive corruption or word deletion
+* Embedding model is not fine-tuned specifically for voice commands
+* Benchmarked on Colab CPU instead of real edge/mobile hardware
+* Hinglish/general multilingual support is partial
+* Conservative thresholding increases false rejections slightly
 
 ## Project Structure
 
-```
+```text
 ├── code/
 │   ├── commands.py
 │   ├── utils.py
@@ -103,5 +114,4 @@ INT8 size is basically the same as FP32 — this is because quantization works o
 │   └── threshold_results.csv
 └── Speech_Classifier.ipynb
 └── README.md
-
 ```
