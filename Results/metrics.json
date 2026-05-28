@@ -1,8 +1,8 @@
 {
-  "clean_accuracy": 100.0,
-  "noise_accuracy": 66.67,
+  "clean_accuracy": 85.71,
+  "noise_accuracy": 76.62,
   "oos_rejection_rate": 100.0,
-  "false_rejection_rate": 0.0,
-  "conf_threshold": 0.45,
-  "margin_threshold": 0.1
+  "false_rejection_rate": 11.4,
+  "conf_threshold": 0.3,
+  "margin_threshold": 0.05
 }

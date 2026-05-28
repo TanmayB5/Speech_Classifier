@@ -8,11 +8,10 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from utils import normalize_text
 
 # these thresholds came from threshold_experiment.py
-CONF_THRESH  = 0.45
-MARGIN_THRESH = 0.10
+CONF_THRESH  = 0.30
+MARGIN_THRESH = 0.05
 
 os.makedirs("results", exist_ok=True)
 
@@ -35,23 +34,113 @@ def predict(text):
 
 # ------- test set -------
 test_data = [
-    ("turn down the volume",        "decrease_volume"),
-    ("make it louder",              "increase_volume"),
-    ("start playing music",         "play_music"),
-    ("pause the song",              "pause_music"),
-    ("answer the phone",            "pick_up_call"),
-    ("reject the call",             "decline_call"),
-    ("skip to next track",          "play_next_song"),
-    ("go back to previous song",    "play_previous_song"),
-    ("do not disturb me",           "activate_dnd"),
-    ("turn off do not disturb",     "deactivate_dnd"),
-    ("brighten the screen",         "increase_brightness"),
-    ("dim the screen",              "decrease_brightness"),
-    ("start the engine",            "start_vehicle"),
-    ("turn off the car",            "stop_vehicle"),
-    ("what is the weather",         "unknown"),
-]
+    # decrease_volume
+    ("make it quieter",                "decrease_volume"),
+    ("volume is too high",             "decrease_volume"),
+    ("turn it down",                   "decrease_volume"),
+    ("it is hurting my ears",          "decrease_volume"),
+    ("way too loud in here",           "decrease_volume"),
 
+    # increase_volume
+    ("make it louder",                 "increase_volume"),
+    ("sound is too low turn it up",    "increase_volume"),
+    ("raise the sound",                "increase_volume"),
+    ("i can barely hear it",           "increase_volume"),
+    ("crank it up",                    "increase_volume"),
+
+    # play_music
+    ("start playing",                  "play_music"),
+    ("play some music",                "play_music"),
+    ("resume music",                   "play_music"),
+    ("get some tunes going",           "play_music"),
+    ("i want something to listen to",  "play_music"),
+
+    # pause_music
+    ("stop the music",                 "pause_music"),
+    ("pause it",                       "pause_music"),
+    ("music pause karo",               "pause_music"),
+    ("cut the music",                  "pause_music"),
+    ("hold on stop the song",          "pause_music"),
+
+    # pick_up_call
+    ("answer the call",                "pick_up_call"),
+    ("pick up",                        "pick_up_call"),
+    ("take the call",                  "pick_up_call"),
+    ("yes receive it",                 "pick_up_call"),
+    ("get that call",                  "pick_up_call"),
+
+    # decline_call
+    ("reject the call",                "decline_call"),
+    ("ignore the call",                "decline_call"),
+    ("cut the call",                   "decline_call"),
+    ("not now send it away",           "decline_call"),
+    ("do not answer it",               "decline_call"),
+
+    # play_next_song
+    ("next song",                      "play_next_song"),
+    ("skip this song",                 "play_next_song"),
+    ("next track please",              "play_next_song"),
+    ("i dont like this one skip it",   "play_next_song"),
+    ("move on to the next one",        "play_next_song"),
+
+    # play_previous_song
+    ("previous song",                  "play_previous_song"),
+    ("go back",                        "play_previous_song"),
+    ("pichla gaana chalao",            "play_previous_song"),
+    ("that last song was better",      "play_previous_song"),
+    ("replay the one before",          "play_previous_song"),
+
+    # activate_dnd
+    ("turn on dnd",                    "activate_dnd"),
+    ("enable do not disturb",          "activate_dnd"),
+    ("disturb mat karo",               "activate_dnd"),
+    ("no notifications for now",       "activate_dnd"),
+    ("i need some quiet",              "activate_dnd"),
+
+    # deactivate_dnd
+    ("turn off dnd",                   "deactivate_dnd"),
+    ("disable do not disturb",         "deactivate_dnd"),
+    ("dnd band karo",                  "deactivate_dnd"),
+    ("i am available now",             "deactivate_dnd"),
+    ("notifications back on",          "deactivate_dnd"),
+
+    # increase_brightness
+    ("make it brighter",               "increase_brightness"),
+    ("brightness up",                  "increase_brightness"),
+    ("brightness badao",               "increase_brightness"),
+    ("screen is too dark",             "increase_brightness"),
+    ("cant see the display",           "increase_brightness"),
+
+    # decrease_brightness
+    ("make it dimmer",                 "decrease_brightness"),
+    ("brightness down",                "decrease_brightness"),
+    ("thoda dim karo",                 "decrease_brightness"),
+    ("screen is blinding me",          "decrease_brightness"),
+    ("tone down the screen",           "decrease_brightness"),
+
+    # start_vehicle
+    ("start the car",                  "start_vehicle"),
+    ("engine start",                   "start_vehicle"),
+    ("gaadi start karo",               "start_vehicle"),
+    ("fire it up",                     "start_vehicle"),
+    ("lets get moving start it",       "start_vehicle"),
+
+    # stop_vehicle
+    ("stop the car",                   "stop_vehicle"),
+    ("engine stop",                    "stop_vehicle"),
+    ("gaadi band karo",                "stop_vehicle"),
+    ("kill the engine",                "stop_vehicle"),
+    ("shut the car off",               "stop_vehicle"),
+
+    # OOS
+    ("what is the weather today",      "unknown"),
+    ("call mom",                       "unknown"),
+    ("open spotify",                   "unknown"),
+    ("set an alarm for 7am",           "unknown"),
+    ("how far is the nearest hospital","unknown"),
+    ("book a cab",                     "unknown"),
+    ("what song is this",              "unknown"),
+]
 print("=" * 60)
 print("EVAL 1 — CLEAN TEST")
 print("=" * 60)
