@@ -1,0 +1,4 @@
+stage,size_mb,avg_latency_ms,accuracy
+sklearn_pkl,0.872,-,100.0
+onnx_fp32,0.543,0.38,100.0
+onnx_int8,0.544,0.326,100.0
